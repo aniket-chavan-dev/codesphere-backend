@@ -11,3 +11,6 @@ wheels/
 .env
 
 db.sqlite3
+data.json
+migrations/
+build.sh
