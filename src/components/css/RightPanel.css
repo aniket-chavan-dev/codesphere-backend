@@ -1,0 +1,18 @@
+
+.gutter {
+    background-color: #1a1a1a;
+    background-repeat: no-repeat;
+    background-position: 50%;
+   
+}
+
+.gutter.gutter-vertical:hover {
+  background-color: #0a84ff;
+ 
+}
+
+.gutter.gutter-vertical {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
+    cursor: row-resize;
+     max-height: 3px;
+}
