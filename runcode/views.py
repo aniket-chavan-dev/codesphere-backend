@@ -38,7 +38,7 @@ class RunPublicTestCases(APIView):
             )
 
             res = {
-                'status' : 'pending',
+                'status' : job.status,
                 'jobid' : job.id
             }
 
