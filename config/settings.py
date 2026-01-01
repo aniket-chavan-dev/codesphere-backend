@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'submissions',
     'comments',
     'solutions',
+    'codeexequeue',
 ]
 
 MIDDLEWARE = [
