@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = 'Run the code execution worker to process code execution jobs.'
 
     def handle(self, *args, **kwargs):
-        self.stdout.write(self.style.SUCCESS('Starting code execution worker...'))
+        self.stdout.write(self.style.SUCCESS('Starting code execution worker...and started in render'))
         while True:
             pending_job = CodeQueue.objects.filter(status='pending').order_by('created_at').first()
             

@@ -28,7 +28,7 @@ class GetProblem(APIView):
         code = ""
         instance = None
 
-        print(kwargs,"GET problem called kwargs")
+      
 
         if "id" in kwargs:
             instance = Problems.objects.filter(id=kwargs["id"]).first()

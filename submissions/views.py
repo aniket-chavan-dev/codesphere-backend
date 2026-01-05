@@ -154,7 +154,7 @@ class SubmitCode(APIView):
     def post(self, req):
         if req.method == "POST":
             code_attr = req.data.get("code")
-            print("code attr",code_attr)
+           
             problem_id = req.data.get('id')
             problem_instance = Problems.objects.get(id = problem_id)
             payload = req.data.get('payload')
@@ -176,7 +176,7 @@ class SubmitCode(APIView):
                 code_instance.save()
 
             
-            print("payload is: ",payload)
+        
             
             user_complete_code = convert_user_code_into_execution(code=code_attr['val'],test_cases=payload)
 
