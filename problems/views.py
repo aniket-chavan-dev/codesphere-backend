@@ -21,21 +21,43 @@ class GetProblemSet(ListAPIView):
     authentication_classes = []
 
 class GetProblem(APIView):
-    permission_classes = [AllowAny]        
+    permission_classes = [AllowAny]
     authentication_classes = []
-    
-    def get(self,req,title):
+
+    def get(self, request, **kwargs):
         code = ""
-        instance = Problems.objects.filter(title=title).first()
-        if req.user.is_authenticated:
-            code_instance = Code.objects.filter(problem_id = instance.id,user_id = req.user.id).first()
-            if code_instance is not None:
+        instance = None
+
+        print(kwargs,"GET problem called kwargs")
+
+        if "id" in kwargs:
+            instance = Problems.objects.filter(id=kwargs["id"]).first()
+
+        elif "title" in kwargs:
+            title = kwargs["title"].replace("-", " ")
+            instance = Problems.objects.filter(title__iexact=title).first()
+
+        if instance is None:
+            return Response(
+                {"msg": "Problem not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if request.user.is_authenticated:
+            code_instance = Code.objects.filter(
+                problem_id=instance.id,
+                user_id=request.user.id
+            ).first()
+
+            if code_instance:
                 code = code_instance.code
-                print(code)
-        if instance is not None:
-            serializer = ProblemSetSerailizer(instance)
-            return Response(data={
-                'data' : serializer.data,
-                'code' : code
-            },status=status.HTTP_200_OK)
-        return Response({'msg' : "not found"},status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProblemSetSerailizer(instance)
+
+        return Response(
+            {
+                "data": serializer.data,
+                "code": code
+            },
+            status=status.HTTP_200_OK
+        )

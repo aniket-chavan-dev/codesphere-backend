@@ -1,13 +1,14 @@
 from .models import HeplperFunctions
 
 def convert_user_code_into_execution(code,test_cases):
+
     updated_code = ""
-    if test_cases['is_linkedList'] :
-        helper_instance = HeplperFunctions.objects.get(id = 1)
-        updated_code += helper_instance.linked_list_helper_function
-    if test_cases['is_tree'] :
-        helper_instance = HeplperFunctions.objects.get(id = 1)
-        updated_code += helper_instance.trees_helper_functions
+    # if test_cases['is_linkedList'] :
+    #     helper_instance = HeplperFunctions.objects.get(id = 1)
+    #     updated_code += helper_instance.linked_list_helper_function
+    # if test_cases['is_tree'] :
+    #     helper_instance = HeplperFunctions.objects.get(id = 1)
+    #     updated_code += helper_instance.trees_helper_functions
     updated_code += "\n"
     function_name = test_cases['function_name']
     input_para_list = []

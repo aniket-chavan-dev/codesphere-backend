@@ -112,12 +112,12 @@ class TestCaseResponse(BaseModel):
 
 def code_to_generate_expected_output(code,payload,input_test_cases) :
     updated_code = ""
-    if payload['is_linkedList'] :
-        helper_instance = HeplperFunctions.objects.get(id = 1)
-        updated_code += helper_instance.linked_list_helper_function
-    if payload['is_tree'] :
-        helper_instance = HeplperFunctions.objects.get(id = 1)
-        updated_code += helper_instance.trees_helper_functions
+    # if payload['is_linkedList'] :
+    #     helper_instance = HeplperFunctions.objects.get(id = 1)
+    #     updated_code += helper_instance.linked_list_helper_function
+    # if payload['is_tree'] :
+    #     helper_instance = HeplperFunctions.objects.get(id = 1)
+    #     updated_code += helper_instance.trees_helper_functions
     updated_code += "\n"
     function_name = payload['function_name']
     input_para_list = []

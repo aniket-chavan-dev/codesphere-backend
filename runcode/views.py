@@ -12,6 +12,24 @@ from codeexequeue.models import CodeQueue
 class RunPublicTestCases(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get(self,req,id) :
+        if req.method == "GET":
+            user = req.user
+            job = CodeQueue.objects.filter(id = id,user_id = user.id).first()
+            if job is None:
+                return Response({'msg' : 'job not found'},status=status.HTTP_404_NOT_FOUND)
+            
+            print("status is ",job.status)
+            if job.status == 'pending':
+                return Response({'status' : job.status},status=status.HTTP_200_OK)
+            elif job.status == 'completed':
+                return Response({'status' : job.status,'result' : job.output,'test_cases' : job.test_cases},status=status.HTTP_200_OK)
+            elif job.status == 'failed':
+                return Response({'status' : job.status,'error' : job.error},status=status.HTTP_200_OK)
+            else :
+                return Response({'msg' : 'Running'},status=status.HTTP_200_OK)
+        return Response({'msg' : 'method not allowed'},status=status.HTTP_400_BAD_REQUEST) 
+
     def post(self,req):
         if req.method == "POST":
             user = req.user
@@ -23,7 +41,8 @@ class RunPublicTestCases(APIView):
                 new_code_instance = Code.objects.create(
                     code = code,
                     user = user,
-                    problem = Problems.objects.get(id = problem_id)
+                    problem = Problems.objects.get(id = problem_id),
+                    
                 )
             else :
                 code_instance.code = code
@@ -35,6 +54,7 @@ class RunPublicTestCases(APIView):
                 code = updated_code,
                 user_id = user.id,
                 problem_id = problem_id,
+                test_cases = test_cases,
             )
 
             res = {

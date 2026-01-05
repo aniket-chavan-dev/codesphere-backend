@@ -4,6 +4,7 @@ from .views import SubmitCode,RuntimeMemoryQueries,ListOfSubmissions,PerticularS
 
 urlpatterns = [
     path('submit/',SubmitCode.as_view()),
+    path('submit/<int:job_id>/',SubmitCode.as_view()),
     path('submit/note/<int:id>/',SubmitCode.as_view()),
     path('timememoryqery/',RuntimeMemoryQueries.as_view()),
     path('listofsubmissions/<int:pk>',ListOfSubmissions.as_view()),
