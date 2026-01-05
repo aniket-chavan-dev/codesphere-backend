@@ -19,7 +19,7 @@ class RunPublicTestCases(APIView):
             if job is None:
                 return Response({'msg' : 'job not found'},status=status.HTTP_404_NOT_FOUND)
             
-            print("status is ",job.status)
+          
             if job.status == 'pending':
                 return Response({'status' : job.status},status=status.HTTP_200_OK)
             elif job.status == 'completed':

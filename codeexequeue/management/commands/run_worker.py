@@ -10,11 +10,21 @@ class Command(BaseCommand):
     help = 'Run the code execution worker to process code execution jobs.'
 
     def handle(self, *args, **kwargs):
-        self.stdout.write(self.style.SUCCESS('Starting code execution worker...and started in render'))
+        self.stdout.write(
+            self.style.SUCCESS(
+                'Starting code execution worker...and started in render'
+            )
+        )
+
         while True:
-            pending_job = CodeQueue.objects.filter(status='pending').order_by('created_at').first()
-            
-            if pending_job is None :
+            pending_job = (
+                CodeQueue.objects
+                .filter(status='pending')
+                .order_by('created_at')
+                .first()
+            )
+
+            if pending_job is None:
                 time.sleep(2)
                 continue
 
@@ -26,21 +36,32 @@ class Command(BaseCommand):
 
             url = "https://codespherejudge-1.onrender.com/run/"
             data = {
-                'code' : code
+                'code': code
             }
+
+            result_json = None  # ✅ IMPORTANT FIX
+
             try:
-                res = requests.post(url=url, data=json.dumps(data))
+                res = requests.post(
+                    url=url,
+                    data=json.dumps(data),
+                    headers={"Content-Type": "application/json"},
+                    timeout=30
+                )
+
                 try:
                     result_json = res.json()
                 except JSONDecodeError:
                     pending_job.error = 'Invalid JSON response from microservice'
                     pending_job.status = 'failed'
                     pending_job.save()
+                    continue  
 
                 pending_job.output = result_json
                 pending_job.status = 'completed'
                 pending_job.save()
-            except requests.exceptions.RequestException as e:
-                pending_job.error = 'Invalid JSON response from microservice'
+
+            except requests.exceptions.RequestException:
+                pending_job.error = 'Microservice request failed'
                 pending_job.status = 'failed'
                 pending_job.save()
