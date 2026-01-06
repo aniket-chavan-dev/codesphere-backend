@@ -39,7 +39,7 @@ class Command(BaseCommand):
                 'code': code
             }
 
-            result_json = None  # ✅ IMPORTANT FIX
+            result_json = None  
 
             try:
                 res = requests.post(
@@ -50,6 +50,7 @@ class Command(BaseCommand):
                 )
 
                 try:
+                    print("json res is",res.json())
                     result_json = res.json()
                 except JSONDecodeError:
                     pending_job.error = 'Invalid JSON response from microservice'
