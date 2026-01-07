@@ -3,28 +3,39 @@ from codeexequeue.models import CodeQueue
 from django.db import transaction
 import time
 import requests
-from json import JSONDecodeError
-import json
+
+
+JUDGE_BASE_URL = "https://codespherejudge-1.onrender.com"
+RUN_URL = f"{JUDGE_BASE_URL}/run"
+
+
+def wait_for_judge_service():
+   
+    while True:
+        try:
+            r = requests.get(JUDGE_BASE_URL, timeout=20)
+            if r.status_code == 200:
+                return
+        except requests.RequestException:
+            pass
+        time.sleep(10)
+
 
 class Command(BaseCommand):
-    help = 'Run the code execution worker to process code execution jobs.'
+    help = "Run code execution worker"
 
     def handle(self, *args, **kwargs):
-        self.stdout.write(
-            self.style.SUCCESS(
-                'Starting code execution worker...and started in render'
-            )
-        )
+        self.stdout.write(self.style.SUCCESS("Worker started"))
 
         while True:
             pending_job = (
                 CodeQueue.objects
-                .filter(status='pending')
-                .order_by('created_at')
+                .filter(status="pending")
+                .order_by("created_at")
                 .first()
             )
 
-            if pending_job is None:
+            if not pending_job:
                 time.sleep(2)
                 continue
 
@@ -32,37 +43,27 @@ class Command(BaseCommand):
                 pending_job.status = "running"
                 pending_job.save()
 
-            code = pending_job.code
-
-            url = "https://codespherejudge-1.onrender.com/run/"
-            data = {
-                'code': code
-            }
-
-            result_json = None  
+            
+            wait_for_judge_service()
 
             try:
                 res = requests.post(
-                    url=url,
-                    data=json.dumps(data),
-                    headers={"Content-Type": "application/json"},
-                    timeout=30
+                    RUN_URL,
+                    json={"code": pending_job.code},
+                    timeout=90  
                 )
 
-                try:
-                    print("json res is",res.json())
-                    result_json = res.json()
-                except JSONDecodeError:
-                    pending_job.error = 'Invalid JSON response from microservice'
-                    pending_job.status = 'failed'
+                if not res.headers.get("content-type", "").startswith("application/json"):
+                    pending_job.status = "failed"
+                    pending_job.error = f"Non-JSON response: {res.text[:300]}"
                     pending_job.save()
-                    continue  
+                    continue
 
-                pending_job.output = result_json
-                pending_job.status = 'completed'
+                pending_job.output = res.json()
+                pending_job.status = "completed"
                 pending_job.save()
 
-            except requests.exceptions.RequestException:
-                pending_job.error = 'Microservice request failed'
-                pending_job.status = 'failed'
+            except requests.RequestException as e:
+                pending_job.status = "failed"
+                pending_job.error = str(e)
                 pending_job.save()
