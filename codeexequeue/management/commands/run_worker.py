@@ -37,7 +37,7 @@ class Command(BaseCommand):
         while True:
             pending_job = (
                 CodeQueue.objects
-                .filter(status="pending", attempts__lt=MAX_RETRIES)
+                .filter(status="pending")
                 .order_by("created_at")
                 .first()
             )
