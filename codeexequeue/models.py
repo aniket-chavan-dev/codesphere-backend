@@ -19,6 +19,7 @@ class CodeQueue(models.Model):
     error = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     test_cases = models.JSONField(blank=True, null=True)
+    attempts = models.IntegerField(default=0) #attempts if execution failed then we retry 2 time more
 
 
     def __str__(self):
