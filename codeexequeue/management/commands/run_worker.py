@@ -17,7 +17,7 @@ def wait_for_judge_service(max_wait=MAX_WARMUP_SECONDS):
     start = time.time()
     while time.time() - start < max_wait:
         try:
-            r = requests.get(JUDGE_BASE_URL, timeout=20)
+            r = requests.get(JUDGE_BASE_URL)
             if r.status_code == 200:
                 return True
         except requests.RequestException:
