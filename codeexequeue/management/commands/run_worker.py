@@ -13,17 +13,30 @@ PING_INTERVAL = 10
 MAX_RETRIES = 3
 
 #this function wake the execution service which is deployed in render it take 50 sec to cold start thats why this function is important but in paid this function is skip
-def wait_for_judge_service(max_wait=MAX_WARMUP_SECONDS):
+def wait_for_judge_service(max_wait=140):
     start = time.time()
+
+    dummy_payload = {"code": "print('warmup')"}
+
     while time.time() - start < max_wait:
         try:
-            r = requests.get(JUDGE_BASE_URL)
-            if r.status_code == 200:
+            r = requests.post(
+                RUN_URL,
+                json=dummy_payload,
+            )
+
+            
+
+            if r.status_code in (200, 400):
                 return True
+
         except requests.RequestException:
             pass
-        time.sleep(PING_INTERVAL)
+
+        time.sleep(5)
+
     return False
+
 
 
 class Command(BaseCommand):
