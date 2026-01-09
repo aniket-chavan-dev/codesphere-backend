@@ -27,7 +27,7 @@ def wait_for_judge_service(max_wait=140):
 
             
 
-            if r.status_code in (200, 400):
+            if r.status_code <= 500:
                 return True
 
         except requests.RequestException:
